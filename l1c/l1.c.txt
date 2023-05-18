@@ -1,0 +1,7 @@
+#include <stdio.h>
+int main(int argc, char *argv[])
+{
+printf("Valeriya Salymova Group number I992");
+getchar(); // Вместо паузы
+return 0;
+} 

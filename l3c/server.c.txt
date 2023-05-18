@@ -1,0 +1,48 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/neutrino.h>
+#include<errno.h>
+#include<sys/iofunc.h>
+#include<sys/dispatch.h>
+
+int main()
+{
+struct _msg_info* infomsg; //структура для дополнительной информации о 
+сообщении
+int chid; //идентификатор канала
+char message[256]; //сообщение полученное
+char* answer="Requst processed"; //сообщение ответ
+int rcvid; //идентификатор отправителя
+
+infomsg =((struct _msg_info*) malloc(sizeof(struct _msg_info))); 
+//выделение памяти
+if((chid = ChannelCreate(0))== NULL) // созадание канала, 0 - не 
+используются флаги для канала
+{
+perror("ChannelCreate"); //сообщить об ошибки
+exit(EXIT_FAILURE); //завершение с ошибкой
+}
+printf("pid=%d\n chid=%d\n", getpid(),chid); //вывести идентификаторы 
+процесса и канала
+while(1)
+{
+if((rcvid = MsgReceive(chid,message,sizeof(message),infomsg))== -
+1) //прием сообщения chid-идентификатор канала,message-полученное 
+сообщение,sizeof(message)-размер сообщения,infomsg –информация о сообщении
+{
+perror("MsgReceive");//сообщить об ошибки
+exit(EXIT_FAILURE); //завершение с ошибкой
+}
+printf("Client rcvid=%d Request %s nbytes=%d\n",rcvid,message, 
+infomsg->msglen); //вывести идентификатор процесса, сообщение, длина 
+сообщения
+if(MsgReply(rcvid,1,answer,strlen(answer)+1)== -1) //отправка 
+ответа rcvid-идентификатор отправителя,EOK- Статус, используемый при 
+разблокировке вызова MsgSend,answer-сообщение ответ,strlen(answer)+1 – длина 
+сообщения ответа
+{
+perror("MsgReceive"); //сообщить об ошибки
+exit(EXIT_FAILURE); //завершение с ошибкой
+}
+}
+}

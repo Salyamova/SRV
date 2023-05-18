@@ -1,0 +1,58 @@
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/neutrino.h>
+#include<errno.h>
+#include<sys/iofunc.h>
+#include<sys/dispatch.h>
+
+int main(int argc, char** argv)
+{
+int coid; //переменная для соединения с собой
+int status; //переменная для вывода статуса
+char* msg="Hello World!"; //сообщение, которое нужно отправить
+char rcvmsg[256]; //сообщение от сервера
+
+//аргументы, полученные из терминала
+if(!argv[1]) //если аргумент – идентификатор процесса не задан
+{
+printf("no pid\n"); //вывести что нет значения
+exit(1); //выход
+}
+
+if(argv[2]==NULL) //если аргумент – идентификатор канала не задан
+{
+printf("no pid\n"); //вывести что нет значения
+exit(1); //выход
+}
+
+if (argv[3]) //если есть третий аргумент
+{
+printf("Too many arg\n"); //вывести, что много аргументов
+exit(1); //выход
+}
+
+if((coid = ConnectAttach(0,atoi(argv[1]),atoi(argv[2]),0,0))==-1) 
+//установить соединение с каналом 0-дескриптор узла,atoi(argv[1])-
+идентификатор процесса,atoi(argv[2])-идентификатор канала, 0-идентификатор 
+соединения, 0- флаги
+{
+printf("name_open\n");
+exit(EXIT_FAILURE); //завершение с ошибкой
+}
+
+MsgSend(coid,msg,strlen(msg)+1,rcvmsg,sizeof(rcvmsg)) //отправить 
+сообщение coid –идентификатор канала,msg-отправляемое сообщение,strlen(msg)+1 
+–количество байтов для отправки (длина сообщения),rcvmsg – указатель на ответ 
+сообщения,sizeof(rcvmsg)-размер сообщения ответа
+
+if(status==-1)
+{
+printf("name_open\n");
+exit(EXIT_FAILURE); //завершение с ошибкой
+}
+printf("Server answer %s\n",rcvmsg); //вывести ответ от сервера
+printf("Status: %d\n",status); //вывести состояние от сервера
+ConnectDetach(coid); //Разрыв соединения с каналом
+return 0;
+}
