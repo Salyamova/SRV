@@ -1,0 +1,50 @@
+#include<stdio.h>
+#include<pthread.h>
+#include<inttypes.h>
+#include<errno.h>
+#include<sys/neutrino.h>
+
+#define SEC_NSEC 1000000000LL // 1 sekyuda billion nanosekynd
+
+void * long_thread(void *_thread_notused)
+{
+	printf("Salyamova Valeria I992, 10 sek\n");
+      sleep(10);
+}
+
+int main(void)
+{
+	uint64_t timeout;
+	struct sigevent event;
+	int rval;
+	pthread_t thread_id;
+
+
+	printf("Prog time \n")
+	event.sigev_notify = SIGEV_UNBLOCK;
+	SIGEV_UNBLOCK_UNIT(&event);
+	pthread_create(&thread_id,NULL, lond_thread, NULL);
+
+	timeout = 10LL* SEC_NSEC;
+	TimerTimeout(CLOCK_REALTIME, _NTO_TIMEOUT_IOIN, &event, &timeout, NULL);
+	rval = prhread_ioin(thread_id, NULL);
+	if (rval == ETIMEDOUT)
+	{
+	printf ("istekli 10 sekynd, thread %d vipolniaetsian!\n", thread_id);
+	}
+	sleep(5);
+
+	TimerTimeout(CLOCK_REALTIME, _NTO_TIMEOUT_IOIN, &event, &timeout, NULL);
+	rval = prhread_ioin(thread_id, NULL);
+
+	if (rval == ETIMEDOUT)
+	{
+	printf ("potok %d >25 sek!", thread_id);
+	}
+	else
+	{
+	printf ("Potok %d \n", thread_id);
+	}
+
+	return(1);
+}
